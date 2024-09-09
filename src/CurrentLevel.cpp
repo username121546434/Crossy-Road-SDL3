@@ -4,7 +4,7 @@
 CurrentLevel::CurrentLevel()
     : current_level {1}, font {TTF_OpenFont(filename.c_str(), font_size)} {
     if (!font)
-        std::cerr << "Error loading font: " << SDL_GetError();
+        std::cerr << "Error loading font: " << SDL_GetError() << std::endl;
 }
 
 CurrentLevel::~CurrentLevel() {
