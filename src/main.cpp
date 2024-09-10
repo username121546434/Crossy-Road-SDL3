@@ -17,22 +17,34 @@ struct AppState {
     CurrentLevel current_level;
     SDL_Window *window;
     SDL_Renderer *renderer;
+    bool player_should_go_up;
 };
 
-SDL_AppResult handle_key_press(AppState *as, SDL_Scancode key) {
+void move_player_up(AppState &as) {
+    bool reset = as.player.move_up(window_size);
+    if (reset) {
+        as.player.reset();
+        as.current_level.increment_level();
+        as.cars.reset(size);
+    }
+}
+
+SDL_AppResult handle_key_down(AppState *as, SDL_Scancode key) {
     switch (key) {
         case SDL_SCANCODE_Q:
             return SDL_APP_SUCCESS;
         case SDL_SCANCODE_UP:
-            bool reset = as->player.move_up(window_size);
-            if (reset) {
-                as->player.reset();
-                as->current_level.increment_level();
-                as->cars.reset(size);
-            }
-            as->player.draw(as->renderer);
+            as->player_should_go_up = true;
     }
 
+    return SDL_APP_CONTINUE;
+}
+
+SDL_AppResult handle_key_up(AppState *as, SDL_Scancode key) {
+    switch (key) {
+        case SDL_SCANCODE_UP:
+            as->player_should_go_up = false;
+    }
     return SDL_APP_CONTINUE;
 }
 
@@ -66,6 +78,9 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     SDL_SetRenderDrawColor(as->renderer, 0, 0, 0, 255);
     SDL_RenderClear(as->renderer);
 
+    if (as->player_should_go_up)
+        move_player_up(*as);
+
     as->cars.update_all(as->current_level.get_level(), as->renderer, size);
     as->current_level.draw(as->renderer);
     as->player.draw(as->renderer);
@@ -90,7 +105,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDL_EVENT_USER:
             as->cars.update_all(as->current_level.get_level(), as->renderer, size);
         case SDL_EVENT_KEY_DOWN:
-            return handle_key_press(as, event->key.scancode);
+            return handle_key_down(as, event->key.scancode);
+        case SDL_EVENT_KEY_UP:
+            return handle_key_up(as, event->key.scancode);
     }
 
     return SDL_APP_CONTINUE;

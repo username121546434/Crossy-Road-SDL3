@@ -18,7 +18,7 @@ void Player::reset() {
 }
 
 bool Player::move_up(int window_height) {
-    y -= 10;
+    y -= 2;
     return y < 0;
 }
 
