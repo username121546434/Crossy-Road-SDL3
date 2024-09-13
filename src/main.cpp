@@ -18,6 +18,7 @@ struct AppState {
     SDL_Window *window;
     SDL_Renderer *renderer;
     bool player_should_go_up;
+    bool pause_game;
 };
 
 void move_player_up(AppState &as) {
@@ -35,6 +36,10 @@ SDL_AppResult handle_key_down(AppState *as, SDL_Scancode key) {
             return SDL_APP_SUCCESS;
         case SDL_SCANCODE_UP:
             as->player_should_go_up = true;
+            break;
+        case SDL_SCANCODE_P:
+            as->pause_game = !as->pause_game;
+            break;
     }
 
     return SDL_APP_CONTINUE;
@@ -44,6 +49,7 @@ SDL_AppResult handle_key_up(AppState *as, SDL_Scancode key) {
     switch (key) {
         case SDL_SCANCODE_UP:
             as->player_should_go_up = false;
+            break;
     }
     return SDL_APP_CONTINUE;
 }
@@ -61,6 +67,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     as->player = Player {window_size / 2};
     as->current_level = CurrentLevel {};
     as->cars = Cars {size};
+    as->player_should_go_up = false;
+    as->pause_game = false;
 
     if (!SDL_CreateWindowAndRenderer("Crossy Road", window_size, window_size, 0, &as->window, &as->renderer)) {
         std::cerr << SDL_GetError() << std::endl;
@@ -74,6 +82,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *as {static_cast<AppState*>(appstate)};
+
+    if (as->pause_game)
+        return SDL_APP_CONTINUE;
     
     SDL_SetRenderDrawColor(as->renderer, 0, 0, 0, 255);
     SDL_RenderClear(as->renderer);
