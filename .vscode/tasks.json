@@ -8,6 +8,7 @@
                 "-fdiagnostics-color=always",
                 "-g",
                 "-static-libstdc++",
+                "-Wall",
                 "${fileDirname}\\*.cpp",
                 "-IC:/cmake/SDL3/include",
                 "-IC:/cmake/SDL3_ttf/include",

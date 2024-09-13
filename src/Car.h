@@ -13,8 +13,8 @@ private:
     int g;
     int b;
 
-    int y;
     int x;
+    int y;
 public:
     Car(int max_x, int max_y);
     void draw_and_update(int speed, SDL_Renderer *renderer);

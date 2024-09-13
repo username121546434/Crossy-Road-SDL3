@@ -3,8 +3,8 @@
 #include <iostream>
 
 Car::Car(int max_x, int max_y)
-    : x {max_x}, y {SDL_rand(max_y - 100) + 40},
-      r {SDL_rand(206) + 50}, g {SDL_rand(206) + 50}, b {SDL_rand(206) + 50} {
+    : r {SDL_rand(206) + 50}, g {SDL_rand(206) + 50}, b {SDL_rand(206) + 50},
+      x {max_x}, y {SDL_rand(max_y - 100) + 40} {
     
 }
 

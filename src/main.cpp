@@ -48,8 +48,9 @@ SDL_AppResult handle_key_down(AppState *as, SDL_Scancode key) {
                     std::cerr << SDL_GetError() << std::endl;
             }
             break;
+        default:
+            return SDL_APP_CONTINUE;
     }
-
     return SDL_APP_CONTINUE;
 }
 
@@ -58,6 +59,8 @@ SDL_AppResult handle_key_up(AppState *as, SDL_Scancode key) {
         case SDL_SCANCODE_UP:
             as->player_should_go_up = false;
             break;
+        default:
+            return SDL_APP_CONTINUE;
     }
     return SDL_APP_CONTINUE;
 }

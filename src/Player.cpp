@@ -1,7 +1,7 @@
 #include "Player.h"
 #include "utils.h"
 
-Player::Player(int x): y {x * 2}, x {x} {
+Player::Player(int x): x {x}, y {x * 2} {
 
 }
 
