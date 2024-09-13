@@ -10,6 +10,7 @@
 
 const int window_size = 600;
 const std::pair<int, int> size {window_size, window_size};
+const std::string window_title {"Crossy Road"};
 
 struct AppState {
     Player player;
@@ -39,6 +40,13 @@ SDL_AppResult handle_key_down(AppState *as, SDL_Scancode key) {
             break;
         case SDL_SCANCODE_P:
             as->pause_game = !as->pause_game;
+            if (as->pause_game) {
+                if (!SDL_SetWindowTitle(as->window, (window_title + " (Paused)").c_str()))
+                    SDL_LogError(SDL_LOG_CATEGORY_ERROR, SDL_GetError());
+            } else {
+                if (!SDL_SetWindowTitle(as->window, window_title.c_str()))
+                    std::cerr << SDL_GetError() << std::endl;
+            }
             break;
     }
 
@@ -70,7 +78,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     as->player_should_go_up = false;
     as->pause_game = false;
 
-    if (!SDL_CreateWindowAndRenderer("Crossy Road", window_size, window_size, 0, &as->window, &as->renderer)) {
+    if (!SDL_CreateWindowAndRenderer(window_title.c_str(), window_size, window_size, 0, &as->window, &as->renderer)) {
         std::cerr << SDL_GetError() << std::endl;
         return SDL_APP_FAILURE;
     }
