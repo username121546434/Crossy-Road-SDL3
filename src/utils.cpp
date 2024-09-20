@@ -11,7 +11,7 @@ void DrawCircle(SDL_Renderer *renderer, int32_t centreX, int32_t centreY, int32_
 
     while (x >= y) {
         //  Each of the following renders an octant of the circle
-        std::array<SDL_bool, 8> m{
+        std::array<bool, 8> m{
             SDL_RenderPoint(renderer, centreX + x, centreY - y),
             SDL_RenderPoint(renderer, centreX + x, centreY + y),
             SDL_RenderPoint(renderer, centreX - x, centreY - y),
@@ -22,7 +22,7 @@ void DrawCircle(SDL_Renderer *renderer, int32_t centreX, int32_t centreY, int32_
             SDL_RenderPoint(renderer, centreX - y, centreY + x),
         };
 
-        if (!std::all_of(m.begin(), m.end(), [](SDL_bool x) { return x; })) {
+        if (!std::all_of(m.begin(), m.end(), [](bool x) { return x; })) {
             std::cerr << SDL_GetError() << std::endl;
         }
 

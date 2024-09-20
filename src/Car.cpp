@@ -12,7 +12,7 @@ void Car::draw_and_update(int speed, SDL_Renderer *renderer) {
     x -= speed;
     SDL_Rect rect {x, y, car_width, car_height};
     SDL_FRect frect;
-    SDL_bool success;
+    bool success;
     success = SDL_SetRenderDrawColor(renderer, r, g, b, SDL_ALPHA_OPAQUE);
     if (!success) std::cerr << "Error: " << SDL_GetError();
     SDL_RectToFRect(&rect, &frect);
