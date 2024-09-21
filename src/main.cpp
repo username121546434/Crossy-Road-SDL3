@@ -11,6 +11,7 @@
 const int window_size = 600;
 const std::pair<int, int> size {window_size, window_size};
 const std::string window_title {"Crossy Road"};
+constexpr double update_rate = 1.0 / 60.0 * 1000;
 
 struct AppState {
     Player player;
@@ -20,6 +21,7 @@ struct AppState {
     SDL_Renderer *renderer;
     bool player_should_go_up;
     bool pause_game;
+    SDL_TimerID step_timer;
 };
 
 void move_player_up(AppState &as) {
@@ -65,6 +67,15 @@ SDL_AppResult handle_key_up(AppState *as, SDL_Scancode key) {
     return SDL_APP_CONTINUE;
 }
 
+// taken from snake game example in sdl github
+static Uint32 sdl_timer_callback_(void *payload, SDL_TimerID timer_id, Uint32 interval) {
+    SDL_Event event;
+    SDL_zero(event);
+    event.type = SDL_EVENT_USER;
+    SDL_PushEvent(&event);
+    return interval;
+}
+
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         std::cerr << SDL_GetError() << std::endl;
@@ -80,6 +91,11 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     as->cars = Cars {size};
     as->player_should_go_up = false;
     as->pause_game = false;
+    
+    as->step_timer = SDL_AddTimer(update_rate, sdl_timer_callback_, NULL);
+    if (as->step_timer == 0) {
+        return SDL_APP_FAILURE;
+    }
 
     if (!SDL_CreateWindowAndRenderer(window_title.c_str(), window_size, window_size, 0, &as->window, &as->renderer)) {
         std::cerr << SDL_GetError() << std::endl;
@@ -100,10 +116,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     SDL_SetRenderDrawColor(as->renderer, 0, 0, 0, 255);
     SDL_RenderClear(as->renderer);
 
-    if (as->player_should_go_up)
-        move_player_up(*as);
-
-    as->cars.update_all(as->current_level.get_level(), as->renderer, size);
+    as->cars.draw_all(as->renderer);
     as->current_level.draw(as->renderer);
     as->player.draw(as->renderer);
 
@@ -125,7 +138,10 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
             return SDL_APP_SUCCESS;
         case SDL_EVENT_USER:
-            as->cars.update_all(as->current_level.get_level(), as->renderer, size);
+            as->cars.update_all(as->current_level.get_level(), size);
+            if (as->player_should_go_up)
+                move_player_up(*as);
+            break;
         case SDL_EVENT_KEY_DOWN:
             return handle_key_down(as, event->key.scancode);
         case SDL_EVENT_KEY_UP:
@@ -141,6 +157,7 @@ void SDL_AppQuit(void *appstate) {
         SDL_DestroyWindow(as->window);
         SDL_DestroyRenderer(as->renderer);
         SDL_free(as);
+        SDL_RemoveTimer(as->step_timer);
         TTF_Quit();
     }
 }
