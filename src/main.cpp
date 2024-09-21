@@ -110,9 +110,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
     AppState *as {static_cast<AppState*>(appstate)};
 
-    if (as->pause_game)
-        return SDL_APP_CONTINUE;
-    
     SDL_SetRenderDrawColor(as->renderer, 0, 0, 0, 255);
     SDL_RenderClear(as->renderer);
 
@@ -138,6 +135,8 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
         case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
             return SDL_APP_SUCCESS;
         case SDL_EVENT_USER:
+            if (as->pause_game)
+                break;
             as->cars.update_all(as->current_level.get_level(), size);
             if (as->player_should_go_up)
                 move_player_up(*as);
@@ -156,8 +155,8 @@ void SDL_AppQuit(void *appstate) {
         AppState* as {static_cast<AppState*>(appstate)};
         SDL_DestroyWindow(as->window);
         SDL_DestroyRenderer(as->renderer);
-        SDL_free(as);
         SDL_RemoveTimer(as->step_timer);
+        SDL_free(as);
         TTF_Quit();
     }
 }
