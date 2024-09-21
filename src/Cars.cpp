@@ -8,20 +8,25 @@ Cars::Cars(std::pair<int, int> max_coors, size_t num_cars): num_cars {num_cars},
         cars.push_back(Car {max_coors.first, max_coors.second});
 }
 
-void Cars::update_all(int speed, SDL_Renderer *renderer, std::pair<int, int> max_coors) {
+void Cars::update_all(int speed, std::pair<int, int> max_coors) {
     int n {SDL_rand(5)};
     if (n == 1)
         cars.push_back(Car {max_coors.first, max_coors.second});
 
     std::vector<std::vector<Car>::iterator> x {};
     for (auto i {cars.begin()}; i != cars.end(); ++i) {
-        i->draw_and_update(speed, renderer);
+        i->update(speed);
         if (i->get_x() < -car_width)
             x.push_back(i);
     }
 
     for (auto &i: x)
         cars.erase(i);
+}
+
+void Cars::draw_all(SDL_Renderer *renderer) {
+    for (Car &c: cars)
+        c.draw(renderer);
 }
 
 void Cars::reset(std::pair<int, int> max_coors) {
