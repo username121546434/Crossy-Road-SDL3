@@ -8,8 +8,11 @@ Car::Car(int max_x, int max_y)
     
 }
 
-void Car::draw_and_update(int speed, SDL_Renderer *renderer) {
+void Car::update(int speed) {
     x -= speed;
+}
+
+void Car::draw(SDL_Renderer *renderer) {
     SDL_Rect rect {x, y, car_width, car_height};
     SDL_FRect frect;
     bool success;

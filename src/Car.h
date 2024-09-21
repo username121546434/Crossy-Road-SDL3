@@ -17,7 +17,8 @@ private:
     int y;
 public:
     Car(int max_x, int max_y);
-    void draw_and_update(int speed, SDL_Renderer *renderer);
+    void update(int speed);
+    void draw(SDL_Renderer *renderer);
     int get_y() const;
     int get_x() const;
 };
