@@ -23,7 +23,7 @@ void DrawCircle(SDL_Renderer *renderer, int32_t centreX, int32_t centreY, int32_
         };
 
         if (!std::all_of(m.begin(), m.end(), [](bool x) { return x; })) {
-            std::cerr << SDL_GetError() << std::endl;
+            std::cerr << "Error drawing circle: " << SDL_GetError() << std::endl;
         }
 
         if (error <= 0) {
