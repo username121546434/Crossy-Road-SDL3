@@ -22,21 +22,22 @@ int CurrentLevel::get_level() const {
 void CurrentLevel::draw(SDL_Renderer *renderer) {
     std::string text {"Current level: "};
     text += std::to_string(current_level);
-    SDL_Color textColor = { 255, 255, 255, 0 };
+    SDL_Color textColor = { 255, 255, 255, 255 };
 
+    SDL_Surface *surface = TTF_RenderText_Blended(font, text.c_str(), 0, textColor);
+    if (!surface) SDL_LogError(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Failed to create surface: %s", SDL_GetError());
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (!texture) SDL_LogError(SDL_LogCategory::SDL_LOG_CATEGORY_ERROR, "Failed to create texture: %s", SDL_GetError());
+    if (!surface || !texture)
+        return;
 
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    int text_width = textSurface->w;
-    int text_height = textSurface->h;
-    SDL_DestroySurface(textSurface);
+    SDL_Rect dstRect {font_x, font_y, surface->w, surface->h};
+    SDL_FRect d;
+    SDL_RectToFRect(&dstRect, &d);
+    SDL_RenderTexture(renderer, texture, NULL, &d);
 
-    SDL_Rect renderQuad = { font_x, font_y, text_width, text_height };
-    SDL_FRect frect;
-    SDL_RectToFRect(&renderQuad, &frect);
-    if (!SDL_RenderTexture(renderer, texture, NULL, &frect))
-        std::cerr << "Error rendering font: " << SDL_GetError() << std::endl;
     SDL_DestroyTexture(texture);
+    SDL_DestroySurface(surface);
 }
 
 CurrentLevel &CurrentLevel::operator=(const CurrentLevel &rhs) {
